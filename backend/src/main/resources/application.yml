@@ -1,0 +1,57 @@
+spring:
+  application:
+    name: ff-curtidas-api
+  datasource:
+    url: jdbc:postgresql://${POSTGRES_HOST:localhost}:${POSTGRES_PORT:5432}/${POSTGRES_DB:free_fire_likes}
+    username: ${POSTGRES_USER:ffuser}
+    password: ${POSTGRES_PASSWORD:SecurePass123!}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: ${SPRING_JPA_HIBERNATE_DDL_AUTO:validate}
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        jdbc:
+          batch_size: 20
+        order_inserts: true
+        order_updates: true
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:6379}
+    timeout: 60000ms
+  cache:
+    type: redis
+    redis:
+      time-to-live: 600000
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+  error:
+    include-message: always
+    include-binding-errors: always
+
+jwt:
+  secret: ${JWT_SECRET:your-super-secret-jwt-key-change-in-production}
+  expiration: 86400000
+  refresh-expiration: 604800000
+
+api:
+  key:
+    salt: ${API_KEY_SALT:your-api-key-salt-change-in-production}
+
+logging:
+  level:
+    root: INFO
+    com.freefire.curtidas: DEBUG
+  pattern:
+    console: "%d{yyyy-MM-dd HH:mm:ss} - %logger{36} - %msg%n"
+
+springdoc:
+  swagger-ui:
+    path: /v1/docs
+    enabled: true
+  api-docs:
+    path: /v1/api-docs

@@ -1,0 +1,89 @@
+version: '3.9'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: ff-curtidas-postgres
+    environment:
+      POSTGRES_DB: free_fire_likes
+      POSTGRES_USER: ffuser
+      POSTGRES_PASSWORD: SecurePass123!
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - ff-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ffuser"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Java Spring Boot Backend
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: ff-curtidas-backend
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/free_fire_likes
+      SPRING_DATASOURCE_USERNAME: ffuser
+      SPRING_DATASOURCE_PASSWORD: SecurePass123!
+      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      JWT_SECRET: your-super-secret-jwt-key-change-in-production
+      API_KEY_SALT: your-api-key-salt-change-in-production
+    ports:
+      - "8080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - ff-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # FastAPI Gateway
+  gateway:
+    build:
+      context: ./gateway
+      dockerfile: Dockerfile
+    container_name: ff-curtidas-gateway
+    environment:
+      BACKEND_URL: http://backend:8080
+      API_PORT: 3000
+    ports:
+      - "3000:3000"
+    depends_on:
+      - backend
+    networks:
+      - ff-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Redis Cache (Optional)
+  redis:
+    image: redis:7-alpine
+    container_name: ff-curtidas-redis
+    ports:
+      - "6379:6379"
+    networks:
+      - ff-network
+    volumes:
+      - redis_data:/data
+
+volumes:
+  postgres_data:
+  redis_data:
+
+networks:
+  ff-network:
+    driver: bridge

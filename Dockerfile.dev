@@ -1,0 +1,23 @@
+# Development Dockerfile para setup local
+FROM ubuntu:22.04
+
+RUN apt-get update && apt-get install -y \
+    openjdk-17-jdk \
+    maven \
+    python3.10 \
+    python3-pip \
+    postgresql-client \
+    curl \
+    git \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /workspace
+
+# Install Python dependencies
+RUN pip3 install fastapi uvicorn sqlalchemy psycopg2-binary pydantic python-dotenv
+
+# Install Maven dependencies (will be cached)
+COPY backend/pom.xml /tmp/pom.xml
+RUN cd /tmp && mvn dependency:resolve
+
+CMD ["/bin/bash"]

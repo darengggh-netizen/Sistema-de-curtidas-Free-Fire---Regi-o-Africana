@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Free Fire Shirts - Sistema de Envio</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .navbar h2 {
+            color: #667eea;
+        }
+
+        .navbar-right {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: #e0e0e0;
+            color: #333;
+        }
+
+        .btn-secondary:hover {
+            background: #d0d0d0;
+        }
+
+        .btn-danger {
+            background: #ff4757;
+            color: white;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h3 {
+            color: #333;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        .auth-section {
+            display: none;
+        }
+
+        .auth-section.active {
+            display: block;
+        }
+
+        .tab-buttons {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .tab-btn {
+            flex: 1;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+
+        .tab-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .status {
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            display: none;
+            font-size: 14px;
+        }
+
+        .status.success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .status.error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .status.loading {
+            background: #d1ecf1;
+            border: 1px solid #bee5eb;
+            color: #0c5460;
+        }
+
+        .shirts-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .shirt-card {
+            background: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .shirt-card:hover {
+            border-color: #667eea;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.2);
+        }
+
+        .shirt-card.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .shirt-name {
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .shirt-team {
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .shirt-rarity {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+        }
+
+        .rarity-epic {
+            background: #9c27b0;
+            color: white;
+        }
+
+        .rarity-rare {
+            background: #2196f3;
+            color: white;
+        }
+
+        .rarity-uncommon {
+            background: #4caf50;
+            color: white;
+        }
+
+        .rarity-legendary {
+            background: #ff9800;
+            color: white;
+        }
+
+        .profile-info {
+            background: #f0f4ff;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-size: 14px;
+        }
+
+        .profile-info p {
+            margin: 5px 0;
+        }
+
+        .profile-info strong {
+            color: #667eea;
+        }
+
+        .history-item {
+            background: #f9f9f9;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            border-left: 4px solid #667eea;
+            font-size: 13px;
+        }
+
+        .history-item p {
+            margin: 4px 0;
+            color: #666;
+        }
+
+        .history-item .time {
+            color: #999;
+            font-size: 11px;
+        }
+
+        .responsive {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .shirts-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Navbar -->
+        <div class="navbar" id="navbar">
+            <h2>👕 Free Fire Shirts</h2>
+            <div class="navbar-right">
+                <span id="userDisplay" style="display: none; color: #333; font-weight: 600;"></span>
+                <button class="btn btn-secondary" onclick="logout()" id="logoutBtn" style="display: none;">Sair</button>
+                <button class="btn btn-primary" onclick="toggleAuth()" id="loginBtn">Login/Registro</button>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content" id="mainContent" style="display: none;">
+            <!-- Left: Send Shirt -->
+            <div class="card">
+                <h3>🁕 Enviar Camisa</h3>
+                <div class="status" id="sendStatus"></div>
+
+                <div class="form-group">
+                    <label>Selecione uma Camisa:</label>
+                    <div class="shirts-grid" id="shirtsGrid"></div>
+                </div>
+
+                <div class="form-group">
+                    <label for="receiverAccount">Conta Free Fire Receptora (ID)</label>
+                    <input type="text" id="receiverAccount" placeholder="Ex: 123456789" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="quantity">Quantidade</label>
+                    <input type="number" id="quantity" min="1" max="100" value="1" required>
+                </div>
+
+                <button class="btn btn-primary" onclick="sendShirt()" style="width: 100%;">Enviar Camisa</button>
+            </div>
+
+            <!-- Right: Profile & History -->
+            <div>
+                <div class="card">
+                    <h3>👤 Meu Perfil</h3>
+                    <div id="profileInfo"></div>
+                </div>
+
+                <div class="card" style="margin-top: 20px;">
+                    <h3>📊 Histórico de Envios</h3>
+                    <div id="historyList"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auth Section -->
+        <div id="authSection" class="card">
+            <h3>🔐 Autenticação</h3>
+            <div class="status" id="authStatus"></div>
+
+            <div class="tab-buttons">
+                <button class="tab-btn active" onclick="switchTab('login')">Login</button>
+                <button class="tab-btn" onclick="switchTab('register')">Registrar</button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-section active">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" placeholder="Sua senha" required>
+                </div>
+                <button class="btn btn-primary" onclick="login()" style="width: 100%;">Entrar</button>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-section">
+                <div class="form-group">
+                    <label for="regUsername">Nome de Usuário</label>
+                    <input type="text" id="regUsername" placeholder="Seu username" required>
+                </div>
+                <div class="form-group">
+                    <label for="regEmail">Email</label>
+                    <input type="email" id="regEmail" placeholder="seu@email.com" required>
+                </div>
+                <div class="form-group">
+                    <label for="regPassword">Senha</label>
+                    <input type="password" id="regPassword" placeholder="Crie uma senha" required>
+                </div>
+                <div class="form-group">
+                    <label for="regCountry">País</label>
+                    <select id="regCountry" required>
+                        <option value="">Selecione seu país</option>
+                        <option value="MZ">🇲🇿 Moçambique</option>
+                        <option value="AO">🇦🇴 Angola</option>
+                        <option value="CV">🇨🇻 Cabo Verde</option>
+                        <option value="GB">🇬🇼 Guiné-Bissau</option>
+                        <option value="ST">🇸🇹 São Tomé e Príncipe</option>
+                        <option value="GQ">🇬🇶 Guiné Equatorial</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary" onclick="register()" style="width: 100%;">Registrar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8001';
+        let token = localStorage.getItem('shirt_token');
+        let selectedShirt = null;
+
+        // Inicializar
+        document.addEventListener('DOMContentLoaded', () => {
+            if (token) {
+                showMainContent();
+                loadProfile();
+                loadHistory();
+                loadShirts();
+            }
+        });
+
+        async function loadShirts() {
+            try {
+                const response = await fetch(`${API_URL}/shirts/available`);
+                const data = await response.json();
+                
+                const shirtsGrid = document.getElementById('shirtsGrid');
+                shirtsGrid.innerHTML = data.shirts.map(shirt => `
+                    <div class="shirt-card" onclick="selectShirt('${shirt.id}', this)">
+                        <div class="shirt-name">${shirt.name}</div>
+                        <div class="shirt-team">${shirt.team}</div>
+                        <div class="shirt-rarity rarity-${shirt.rarity.toLowerCase()}">${shirt.rarity}</div>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Erro ao carregar camisas:', error);
+            }
+        }
+
+        function selectShirt(shirtId, element) {
+            document.querySelectorAll('.shirt-card').forEach(card => card.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedShirt = shirtId;
+        }
+
+        async function sendShirt() {
+            if (!selectedShirt) {
+                showStatus('authStatus', 'Selecione uma camisa', 'error');
+                return;
+            }
+
+            const receiver = document.getElementById('receiverAccount').value;
+            const quantity = parseInt(document.getElementById('quantity').value);
+
+            if (!receiver || !quantity) {
+                showStatus('sendStatus', 'Preencha todos os campos', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/shirts/send`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        receiver_ff_account: receiver,
+                        shirt: selectedShirt,
+                        quantity: quantity
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    showStatus('sendStatus', `✅ ${data.message}`, 'success');
+                    document.getElementById('receiverAccount').value = '';
+                    document.getElementById('quantity').value = '1';
+                    loadHistory();
+                    loadProfile();
+                } else {
+                    showStatus('sendStatus', `❌ ${data.detail || 'Erro ao enviar'}`, 'error');
+                }
+            } catch (error) {
+                showStatus('sendStatus', `❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
+        async function loadProfile() {
+            try {
+                const response = await fetch(`${API_URL}/user/profile`, {
+                    headers: {'Authorization': `Bearer ${token}`}
+                });
+                const data = await response.json();
+
+                document.getElementById('userDisplay').textContent = `👤 ${data.username}`;
+                document.getElementById('userDisplay').style.display = 'block';
+
+                document.getElementById('profileInfo').innerHTML = `
+                    <div class="profile-info">
+                        <p><strong>Usuário:</strong> ${data.username}</p>
+                        <p><strong>Email:</strong> ${data.email}</p>
+                        <p><strong>País:</strong> ${data.country}</p>
+                        <p><strong>Total de Camisas Enviadas:</strong> ${data.total_items_sent}</p>
+                        <p><strong>Total de Transações:</strong> ${data.total_sent}</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Erro ao carregar perfil:', error);
+            }
+        }
+
+        async function loadHistory() {
+            try {
+                const response = await fetch(`${API_URL}/shirts/history`, {
+                    headers: {'Authorization': `Bearer ${token}`}
+                });
+                const data = await response.json();
+
+                const historyList = document.getElementById('historyList');
+                if (data.transactions.length > 0) {
+                    historyList.innerHTML = data.transactions.slice(-5).reverse().map(t => `
+                        <div class="history-item">
+                            <p><strong>${t.quantity}x ${t.shirt_name}</strong></p>
+                            <p>Para: ${t.receiver_ff_account}</p>
+                            <p>Time: ${t.shirt_team}</p>
+                            <div class="time">📅 ${new Date(t.timestamp).toLocaleString('pt-BR')}</div>
+                        </div>
+                    `).join('');
+                } else {
+                    historyList.innerHTML = '<p style="color: #999;">Nenhum envio realizado</p>';
+                }
+            } catch (error) {
+                console.error('Erro ao carregar histórico:', error);
+            }
+        }
+
+        async function login() {
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            if (!email || !password) {
+                showStatus('authStatus', 'Preencha todos os campos', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({email, password})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    token = data.access_token;
+                    localStorage.setItem('shirt_token', token);
+                    showStatus('authStatus', `✅ Bem-vindo, ${data.user.username}!`, 'success');
+                    setTimeout(() => {
+                        showMainContent();
+                        loadProfile();
+                        loadHistory();
+                        loadShirts();
+                    }, 1500);
+                } else {
+                    showStatus('authStatus', `❌ ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                showStatus('authStatus', `❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
+        async function register() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const country = document.getElementById('regCountry').value;
+
+            if (!username || !email || !password || !country) {
+                showStatus('authStatus', 'Preencha todos os campos', 'error');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {'Content-Type': 'application/json'},
+                    body: JSON.stringify({username, email, password, country})
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    token = data.access_token;
+                    localStorage.setItem('shirt_token', token);
+                    showStatus('authStatus', `✅ Conta criada com sucesso!`, 'success');
+                    setTimeout(() => {
+                        showMainContent();
+                        loadProfile();
+                        loadHistory();
+                        loadShirts();
+                    }, 1500);
+                } else {
+                    showStatus('authStatus', `❌ ${data.detail}`, 'error');
+                }
+            } catch (error) {
+                showStatus('authStatus', `❌ Erro: ${error.message}`, 'error');
+            }
+        }
+
+        function logout() {
+            token = null;
+            localStorage.removeItem('shirt_token');
+            location.reload();
+        }
+
+        function showMainContent() {
+            document.getElementById('mainContent').style.display = 'grid';
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('loginBtn').style.display = 'none';
+            document.getElementById('logoutBtn').style.display = 'block';
+        }
+
+        function toggleAuth() {
+            document.getElementById('mainContent').style.display = 'none';
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('loginBtn').style.display = 'block';
+            document.getElementById('logoutBtn').style.display = 'none';
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.auth-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (tab === 'login') {
+                document.getElementById('loginForm').classList.add('active');
+                document.querySelectorAll('.tab-btn')[0].classList.add('active');
+            } else {
+                document.getElementById('registerForm').classList.add('active');
+                document.querySelectorAll('.tab-btn')[1].classList.add('active');
+            }
+        }
+
+        function showStatus(elementId, message, type) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status ${type}`;
+            element.style.display = 'block';
+
+            if (type === 'success') {
+                setTimeout(() => {
+                    element.style.display = 'none';
+                }, 4000);
+            }
+        }
+    </script>
+</body>
+</html>
